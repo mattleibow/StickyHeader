@@ -11,7 +11,7 @@ namespace StickyHeader.Animator
 
 		private readonly IList<AnimatorBundle> listAnimatorBundles;
 
-		public AnimatorBuilder()
+		private AnimatorBuilder()
 		{
 			listAnimatorBundles = new List<AnimatorBundle>(2);
 		}
@@ -89,14 +89,14 @@ namespace StickyHeader.Animator
 			return this;
 		}
 
-		public virtual AnimatorBuilder ApplyFade(View viewToFade, float fade)
+		public virtual AnimatorBuilder ApplyFade(View viewToFade)
 		{
 			if (viewToFade == null)
 			{
 				throw new ArgumentNullException("viewToFade");
 			}
 
-			listAnimatorBundles.Add(AnimatorBundle.Create(AnimatorBundle.TypeAnimation.Fade, viewToFade, fade));
+			listAnimatorBundles.Add(AnimatorBundle.Create(AnimatorBundle.TypeAnimation.Fade, viewToFade, 1.0f));
 
 			return this;
 		}
@@ -177,7 +177,7 @@ namespace StickyHeader.Animator
 				switch (animatorBundle.mTypeAnimation)
 				{
 					case AnimatorBundle.TypeAnimation.Fade:
-						animatorBundle.mView.Alpha = boundedRatioTranslationY; //TODO performance issues?
+						animatorBundle.mView.Alpha = boundedRatioTranslationY;
 						break;
 
 					case AnimatorBundle.TypeAnimation.Translation:

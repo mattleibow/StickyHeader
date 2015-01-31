@@ -39,7 +39,19 @@ namespace StickyHeaderSample
 			listView.Adapter = new ArrayAdapter<string>(Activity, Android.Resource.Layout.SimpleListItem1, elements);
 		}
 
-		public class CustomHeaderAnimator : HeaderStickyAnimator
+		public override void OnStart()
+		{
+			base.OnStart();
+			Activity.ActionBar.Hide();
+		}
+
+		public override void OnStop()
+		{
+			base.OnStop();
+			Activity.ActionBar.Show();
+		}
+
+		private class CustomHeaderAnimator : HeaderStickyAnimator
 		{
 			private readonly Context mContext;
 			private bool isCovering;
@@ -53,14 +65,10 @@ namespace StickyHeaderSample
 				mContext = context;
 			}
 
-			public override AnimatorBuilder AnimatorBuilder
+			public override AnimatorBuilder CreateAnimatorBuilder()
 			{
-				get
-				{
-					View image = Header.FindViewById(Resource.Id.header_image);
-
-					return (new AnimatorBuilder()).ApplyVerticalParallax(image, 0.5f);
-				}
+				View image = Header.FindViewById(Resource.Id.header_image);
+				return AnimatorBuilder.Create().ApplyVerticalParallax(image, 0.5f);
 			}
 
 			protected override void OnAnimatorAttached()
@@ -118,18 +126,6 @@ namespace StickyHeaderSample
 					isCovering = false;
 				}
 			}
-		}
-
-		public override void OnStart()
-		{
-			base.OnStart();
-			Activity.ActionBar.Hide();
-		}
-
-		public override void OnStop()
-		{
-			base.OnStop();
-			Activity.ActionBar.Show();
 		}
 	}
 }

@@ -1,6 +1,5 @@
 ﻿using Android.App;
 using Android.OS;
-using StickyHeaderSample;
 
 namespace StickyHeaderSample
 {

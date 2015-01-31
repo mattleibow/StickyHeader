@@ -87,7 +87,9 @@
       <SubType>Designer</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\RecyclerViewLayout.axml" />
-    <AndroidResource Include="Resources\layout\ListViewLayout.axml" />
+    <AndroidResource Include="Resources\layout\ListViewLayout.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
     <AndroidResource Include="Resources\layout\ScrollViewLayout.axml" />
     <AndroidResource Include="Resources\values\dimens.xml">
       <SubType>Designer</SubType>

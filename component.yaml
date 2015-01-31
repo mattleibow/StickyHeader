@@ -10,18 +10,20 @@ src-url: https://github.com/mattleibow/StickyHeader
 summary: A very simple library that allows you to stick any View as a header of a ListView, RecyclerView or ScrollView.
 
 icons: 
-  - stickyheader_128x128.png
-  - stickyheader_512x512.png
+  - component/stickyheader_128x128.png
+  - component/stickyheader_512x512.png
 
 samples: 
-  Android Sample: ../StickyHeader.sln
+  - name: Android Sample
+    path: StickyHeader.sln
+    no_build: true
 
 libraries: 
-  android: ../StickyHeader/bin/Release/StickyHeader.dll
+  android: StickyHeader/bin/Release/StickyHeader.dll
 
-getting-started: GettingStarted.md
-details: Details.md
-license: License.md
+getting-started: component/GettingStarted.md
+details: component/Details.md
+license: component/License.md
 screenshots: 
-  - screenshot1.jpg
+  - component/screenshot1.jpg
 

@@ -15,7 +15,7 @@ namespace StickyHeaderSample
 			// fragments
 			var fragments = new Dictionary<string, Fragment>
 			{
-				{"Simple Sticky Header",new ListViewFragment()},
+				{"List View Sticky Header",new ListViewFragment()},
 				{"Parallax Simple Sticky Header",new ParallaxFragment()},
 				{"ActionBarImage Header",new ActionBarImageFragment()},
 				{"Custom Animation Header",new CustomHeaderFragment()},

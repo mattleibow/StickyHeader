@@ -18,10 +18,11 @@ namespace StickyHeaderSample
 			base.OnViewCreated(view, savedInstanceState);
 
 			// header
-			var listView = View.FindViewById<ListView>(Resource.Id.listview);
+			var container = View.FindViewById<FrameLayout>(Resource.Id.layout_container);
+			var listView = container.FindViewById<ListView>(Resource.Id.listview);
 			StickyHeaderBuilder
 				.StickTo(listView)
-				.SetHeader(Resource.Id.header, (ViewGroup) View)
+				.SetHeader(Resource.Id.header, container)
 				.SetMinHeight(250)
 				.Apply();
 

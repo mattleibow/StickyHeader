@@ -11,9 +11,9 @@ namespace StickyHeader.Animator
 			builderFunc = builder;
 		}
 
-		public override AnimatorBuilder AnimatorBuilder
+		public override AnimatorBuilder CreateAnimatorBuilder()
 		{
-			get { return builderFunc(); }
+			return builderFunc();
 		}
 	}
 }

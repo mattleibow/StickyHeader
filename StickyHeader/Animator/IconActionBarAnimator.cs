@@ -15,20 +15,17 @@ namespace StickyHeader.Animator
 			this.homeActionBar = activity.FindViewById(Android.Resource.Id.Home);
 		}
 
-		public override AnimatorBuilder AnimatorBuilder
+		public override AnimatorBuilder CreateAnimatorBuilder()
 		{
-			get
-			{
-				var view = Header.FindViewById(layoutResource);
-				var rect = new RectangleF(
-					homeActionBar.Left, homeActionBar.Top,
-					homeActionBar.Right, homeActionBar.Bottom);
-				var point = new PointF(homeActionBar.Left, homeActionBar.Top);
-				return AnimatorBuilder
-					.Create()
-					.ApplyScale(view, rect)
-					.ApplyTranslation(view, point);
-			}
+			var view = Header.FindViewById(layoutResource);
+			var rect = new RectangleF(
+				homeActionBar.Left, homeActionBar.Top,
+				homeActionBar.Right, homeActionBar.Bottom);
+			var point = new PointF(homeActionBar.Left, homeActionBar.Top);
+			return AnimatorBuilder
+				.Create()
+				.ApplyScale(view, rect)
+				.ApplyTranslation(view, point);
 		}
 	}
 }

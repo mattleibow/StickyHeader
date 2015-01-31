@@ -27,7 +27,9 @@ namespace StickyHeaderSample
 				.SetAnimator(() =>
 				{
 					var image = View.FindViewById(Resource.Id.header_image);
-					return AnimatorBuilder.Create().ApplyVerticalParallax(image);
+					return AnimatorBuilder
+						.Create()
+						.ApplyVerticalParallax(image);
 				})
 				.Apply();
 

@@ -8,15 +8,15 @@
 		/// <summary>
 		///     Override if you want to load the animator builder
 		/// </summary>
-		public virtual AnimatorBuilder AnimatorBuilder
+		public virtual AnimatorBuilder CreateAnimatorBuilder()
 		{
-			get { return null; }
+			return null;
 		}
 
 		protected internal override void OnAnimatorReady()
 		{
 			base.OnAnimatorReady();
-			animatorBuilder = AnimatorBuilder;
+			animatorBuilder = CreateAnimatorBuilder();
 			hasAnimatorBundles = (animatorBuilder != null) && (animatorBuilder.HasAnimatorBundles());
 		}
 

@@ -1,66 +1,93 @@
-StikkyHeader
-============
+# StickyHeader
 
-A very simple library that allows you to stick any View as a header of a ListView, RecyclerView or ScrollView.
+A very simple library that allows you to stick any `View` as a header of a:
 
-## Using
+ - `ListView`
+ - `RecyclerView`
+ - `ScrollView`
 
-To use the StikkyHeader library, you just need 3 lines:
+## Adding a Sticky Header
 
-```java
-  StikkyHeaderBuilder.stickTo(mListView)
-    .setHeader(R.id.header, containerLayout)
-    .minHeightHeaderPixel(250)
-    .build();
-```
-that's all, folks! 
+To stick a header to a list view, we just need a `ListView` and any `View` to use as the header:
 
-## Header Animator
+    <?xml version="1.0" encoding="utf-8"?>
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/layout_container">
+        <ListView
+            android:id="@+id/listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <FrameLayout
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/max_height_header"
+            android:background="@android:color/holo_blue_dark">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_marginBottom="10dp"
+                android:text="Hello World!"
+                android:textSize="25dp" />
+        </FrameLayout>
+    </FrameLayout>
 
-Using the StikkyHeader you can create easly some nice animations extending the ``HeaderStikkyAnimator`` and using the utility ``AnimatorBuilder``.
-The animations available are ``Translation``, ``Scale`` and ``Fade`` and can be combined to build an animation during the translation of the StikkyHeader.
+Once we have the layout inflated, we can use the `StickyHeaderBuilder` to attach the header to the list:
 
-Example:
-```java
-public class IconAnimator extends HeaderStikkyAnimator {
+    var listView = container.FindViewById<ListView>(Resource.Id.listview);
+    StickyHeaderBuilder
+        .StickTo(listView)
+        .SetHeader(Resource.Id.header, container)
+        .SetMinHeight(250)
+        .Apply();
 
-    @Override
-    public AnimatorBuilder getAnimatorBuilder() {
+## Using a Sticky Header Animator
 
-        View viewToAnimate = getHeader().findViewById(R.id.icon);
-        Point point = new Point(50,100) // translate to the point with coordinate (50,100);
-        float scaleX = 0.5f //scale to the 50%
-        float scaleY = 0.5f //scale to the 50%
-        float fade = 0.2f // 20% fade
+There are various animations that can be used when transitioning the header. This is easily done with the `AnimatorBuilder` type. Some of the built in transitions are:
 
-        AnimatorBuilder animatorBuilder = AnimatorBuilder.create()
-            .applyScale(viewToAnimate, scaleX, scaleY)
-            .applyTranslation(viewToAnimate, point)
-            .applyFade(viewToAnimate, fade);
+ - Scale
+ - Translation
+ - Fade
+ - Parallax
 
-        return animatorBuilder;
-    }
-}
-```
+For simple transitions, we can pass a delegate that returns an `AnimatorBuilder` to the `SetAnimator` method:
 
-and then set the animator to the StikkyHeader:
+    .SetAnimator(() => {
+        var image = View.FindViewById(Resource.Id.header_image);
+        return AnimatorBuilder
+          .Create()
+          .ApplyVerticalParallax(image);
+    })
 
-```java
-  StikkyHeaderBuilder.stickTo(mListView)
-    .setHeader(R.id.header, containerLayout)
-    .minHeightHeaderPixel(250)
-    .animator(new IconAnimator())
-    .build();
-```
+If we need more complex transitions, we can inherit from `HeaderStickyAnimator`:
 
-## ViewGroup supported
+	public class IconActionBarAnimator : HeaderStickyAnimator
+	{
+		private readonly View homeActionBar;
+		private readonly int layoutResource;
 
-The StikkyHeader supports:
-- ListView
-- RecyclerView
-- ScrollView
+		public IconActionBarAnimator(Activity activity, int layoutResource)
+		{
+			this.layoutResource = layoutResource;
+			this.homeActionBar = activity.FindViewById(Android.Resource.Id.Home);
+		}
 
-## Video
+		public override AnimatorBuilder CreateAnimatorBuilder()
+		{
+			var view = Header.FindViewById(layoutResource);
+			var rect = new RectangleF(
+				homeActionBar.Left, homeActionBar.Top,
+				homeActionBar.Right, homeActionBar.Bottom);
+			var point = new PointF(homeActionBar.Left, homeActionBar.Top);
+			return AnimatorBuilder
+				.Create()
+				.ApplyScale(view, rect)
+				.ApplyTranslation(view, point);
+		}
+	}
 
-![Example 1](https://raw.githubusercontent.com/carlonzo/StikkyHeader/develop/readme/example1.gif)
-![Example 2](https://raw.githubusercontent.com/carlonzo/StikkyHeader/develop/readme/example2.gif)
+## Example
+
+![Example](https://raw.githubusercontent.com/mattleibow/StickyHeader/master/component/screenshot1.jpg)
