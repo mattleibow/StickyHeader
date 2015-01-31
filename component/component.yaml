@@ -1,21 +1,27 @@
 %YAML 1.2
 ---
+
+id: stickyheader
+name: Sticky Header
+version: 1.0.0
+publisher: Xamarin Inc
+publisher-url: http://xamarin.com/
+src-url: https://github.com/mattleibow/StickyHeader
 summary: A very simple library that allows you to stick any View as a header of a ListView, RecyclerView or ScrollView.
-getting-started: GettingStarted.md
-details: Details.md
-screenshots: 
-  - screenshots/screenshot1.png
-license: License.md
+
 icons: 
   - stickyheader_128x128.png
   - stickyheader_512x512.png
-publisher: Xamarin Inc
-name: Sticky Header
-id: stickyheader
+
 samples: 
-  iOS Sample: ../samples/AwesomeSample/AwesomeSample.sln
-publisher-url: http://xamarin.com/
+  Android Sample: ../StickyHeader.sln
+
 libraries: 
-  ios: ../lib/ios/Awesome.dll
-version: 1.0.0
-...
+  android: ../StickyHeader/bin/Release/StickyHeader.dll
+
+getting-started: GettingStarted.md
+details: Details.md
+license: License.md
+screenshots: 
+  - screenshot1.jpg
+
