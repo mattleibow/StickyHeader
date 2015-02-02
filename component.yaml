@@ -15,7 +15,7 @@ icons:
 
 samples: 
   - name: Android Sample
-    path: StickyHeader.sln
+    path: StickyHeaderSample\StickyHeaderSample.sln
     no_build: true
 
 libraries: 
@@ -27,3 +27,8 @@ license: component/License.md
 screenshots: 
   - component/screenshot1.jpg
 
+packages:
+  android:
+    - Xamarin.Android.Support.v4, Version=21.0.3
+    - Xamarin.Android.Support.v7.GridLayout, Version=21.0.3
+    - Xamarin.Android.Support.v7.RecyclerView, Version=21.0.3

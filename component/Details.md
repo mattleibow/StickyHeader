@@ -87,7 +87,3 @@ If we need more complex transitions, we can inherit from `HeaderStickyAnimator`:
 				.ApplyTranslation(view, point);
 		}
 	}
-
-## Example
-
-![Example](https://raw.githubusercontent.com/mattleibow/StickyHeader/master/component/screenshot1.jpg)

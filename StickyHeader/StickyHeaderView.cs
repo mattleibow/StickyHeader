@@ -56,17 +56,33 @@ namespace StickyHeader
 			if (height == 0)
 			{
 				// attach, wait for the height, detach
-				EventHandler handler = null;
-				handler = (sender, e) =>
+
+				// support for newer android
+//				EventHandler handler = null;
+//				handler = (sender, e) =>
+//				{
+//					int h = header.Height;
+//					if (h > 0)
+//					{
+//						header.ViewTreeObserver.GlobalLayout -= handler;
+//						SetHeightHeader(h);
+//					}
+//				};
+//				header.ViewTreeObserver.GlobalLayout += handler;
+
+				// support for older Xamarin.Android that threw exceptions
+				bool fired = false;
+				header.ViewTreeObserver.GlobalLayout += (sender, e) =>
 				{
+					if (fired) return;
+
 					int h = header.Height;
 					if (h > 0)
 					{
-						header.ViewTreeObserver.GlobalLayout -= handler;
+						fired = true;
 						SetHeightHeader(h);
 					}
 				};
-				header.ViewTreeObserver.GlobalLayout += handler;
 			}
 			else
 			{

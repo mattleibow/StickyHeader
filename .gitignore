@@ -5,6 +5,7 @@
 *.suo
 *.user
 *.sln.docstates
+*.userprefs
 
 # Build results
 [Dd]ebug/
@@ -181,4 +182,7 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
+
 Thumbs.db
+*/Resources/Resource.Designer.cs
+*.xam
