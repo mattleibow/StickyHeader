@@ -8,22 +8,18 @@ namespace StickyHeader
 {
 	public class StickyHeaderRecyclerView : StickyHeaderView
 	{
-		private readonly RecyclerView recyclerView;
-
 		public StickyHeaderRecyclerView(Context context, View header, int minHeightHeader, HeaderAnimator headerAnimator, RecyclerView recyclerView)
-			: base(context, header, minHeightHeader, headerAnimator)
+			: base(context, header, recyclerView, minHeightHeader, headerAnimator)
 		{
-			this.recyclerView = recyclerView;
+			SetupItemDecorator();
 
 			// scroll events
 			recyclerView.SetOnScrollListener(new RecyclerScrollListener(this));
 		}
 
-		protected override void SetHeightHeader(int value)
+		private RecyclerView recyclerView
 		{
-			base.SetHeightHeader(value);
-
-			SetupItemDecorator();
+			get { return (RecyclerView)view; }
 		}
 
 		private void SetupItemDecorator()
@@ -71,7 +67,7 @@ namespace StickyHeader
 				base.GetItemOffsets(outRect, view, parent, state);
 
 				var layoutManager = (GridLayoutManager)parent.GetLayoutManager();
-				int position = parent.GetChildPosition(view);
+				int position = parent.GetChildAdapterPosition(view);
 				if (position < layoutManager.SpanCount)
 				{
 					outRect.Top = headerView.heightHeader;
@@ -92,7 +88,7 @@ namespace StickyHeader
 			{
 				base.GetItemOffsets(outRect, view, parent, state);
 
-				int position = parent.GetChildPosition(view);
+				int position = parent.GetChildAdapterPosition(view);
 				if (position == 0)
 				{
 					outRect.Top = headerView.heightHeader;
@@ -108,15 +104,26 @@ namespace StickyHeader
 			public RecyclerScrollListener(StickyHeaderRecyclerView headerView)
 			{
 				this.headerView = headerView;
-				this.scrolledY = 0;
-				this.scrolledY = 0;
+				this.scrolledY = int.MinValue;
 			}
 
 			public override void OnScrolled(RecyclerView recyclerView, int dx, int dy)
 			{
 				base.OnScrolled(recyclerView, dx, dy);
+				
+				if (scrolledY == int.MinValue)
+				{
+					var child = recyclerView.GetChildAt(0);
+					var positionFirstItem = recyclerView.GetChildAdapterPosition(child);
+					var heightDecorator = positionFirstItem == 0 ? 0 : headerView.heightHeader;
+					var offset = recyclerView.ComputeVerticalScrollOffset();
+					scrolledY = offset + heightDecorator;
+				}
+				else
+				{
+					scrolledY += dy;
+				}
 
-				scrolledY += dy;
 				headerView.headerAnimator.OnScroll(-scrolledY);
 			}
 		}

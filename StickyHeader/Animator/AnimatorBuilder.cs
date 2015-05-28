@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using Android.Views;
+using Android.Views.Animations;
 
 namespace StickyHeader.Animator
 {
@@ -10,6 +11,7 @@ namespace StickyHeader.Animator
 		public const float DefaultVelocityAnimator = 0.5f;
 
 		private readonly IList<AnimatorBundle> listAnimatorBundles;
+		private float mLastTranslationApplied = float.NaN;
 
 		private AnimatorBuilder()
 		{
@@ -23,30 +25,42 @@ namespace StickyHeader.Animator
 
 		public virtual AnimatorBuilder ApplyScale(View view, RectangleF finalRect)
 		{
-			if (view == null)
-			{
-				throw new ArgumentNullException("view");
-			}
-
-			var from = new RectangleF(view.Left, view.Top, view.Right, view.Bottom);
-			var scaleX = 1f - finalRect.Width / from.Width;
-			var scaleY = 1f - finalRect.Height/from.Height;
-
-			return ApplyScale(view, scaleX, scaleY);
+			return ApplyScale(view, finalRect, null);
 		}
 
-		public virtual AnimatorBuilder ApplyScale(View view, float scaleX, float scaleY)
+		public virtual AnimatorBuilder ApplyScale(View view, RectangleF finalRect, IInterpolator interpolator)
 		{
 			if (view == null)
 			{
 				throw new ArgumentNullException("view");
 			}
 
-			AnimatorBundle animatorScale = AnimatorBundle.Create(AnimatorBundle.TypeAnimation.Scale, view, scaleX, scaleY);
+			var from = new RectangleF(view.Left, view.Top, view.Right, view.Bottom);
+			var scaleX = finalRect.Width / from.Width;
+			var scaleY = finalRect.Height / from.Height;
 
-			AdjustTranslation(animatorScale);
+			return ApplyScale(view, scaleX, scaleY, interpolator);
+		}
 
-			listAnimatorBundles.Add(animatorScale);
+		public virtual AnimatorBuilder ApplyScale(View view, float scaleX, float scaleY)
+		{
+			return ApplyScale(view, scaleX, scaleY, null);
+		}
+
+		public virtual AnimatorBuilder ApplyScale(View view, float scaleX, float scaleY, IInterpolator interpolator)
+		{
+			if (view == null)
+			{
+				throw new ArgumentNullException("view");
+			}
+
+			AnimatorBundle animatorScaleX = AnimatorBundle.Create(AnimatorBundle.TypeAnimation.ScaleX, view, interpolator, view.ScaleX, scaleX);
+			AnimatorBundle animatorScaleY = AnimatorBundle.Create(AnimatorBundle.TypeAnimation.ScaleY, view, interpolator, view.ScaleY, scaleY);
+
+			AdjustTranslation(view);
+
+			listAnimatorBundles.Add(animatorScaleX);
+			listAnimatorBundles.Add(animatorScaleY);
 
 			return this;
 		}
@@ -60,6 +74,11 @@ namespace StickyHeader.Animator
 		/// </param>
 		public virtual AnimatorBuilder ApplyTranslation(View view, PointF finalPoint)
 		{
+			return ApplyTranslation(view, finalPoint, null);
+		}
+
+		public virtual AnimatorBuilder ApplyTranslation(View view, PointF finalPoint, IInterpolator interpolator)
+		{
 			if (view == null)
 			{
 				throw new ArgumentNullException("view");
@@ -69,34 +88,52 @@ namespace StickyHeader.Animator
 			var translationX = finalPoint.X - from.X;
 			var translationY = finalPoint.Y - from.Y;
 
-			return ApplyTranslation(view, translationX, translationY);
+			return ApplyTranslation(view, translationX, translationY, interpolator);
 		}
 
 		public virtual AnimatorBuilder ApplyTranslation(View view, float translateX, float translateY)
+		{
+			return ApplyTranslation(view, translateX, translateY, null);
+		}
+
+		public virtual AnimatorBuilder ApplyTranslation(View view, float translateX, float translateY, IInterpolator interpolator)
 		{
 			if (view == null)
 			{
 				throw new ArgumentNullException("view");
 			}
 
-			AnimatorBundle animatorTranslation = AnimatorBundle.Create(AnimatorBundle.TypeAnimation.Translation, view,
-				translateX, translateY);
+			AnimatorBundle animatorTranslationX = AnimatorBundle.Create(AnimatorBundle.TypeAnimation.TranslationX, view, interpolator, view.TranslationX, translateX);
+			AnimatorBundle animatorTranslationY = AnimatorBundle.Create(AnimatorBundle.TypeAnimation.TranslationY, view, interpolator, view.TranslationY, translateY);
 
-			AdjustTranslation(animatorTranslation);
+			AdjustTranslation(view);
 
-			listAnimatorBundles.Add(animatorTranslation);
+			listAnimatorBundles.Add(animatorTranslationX);
+			listAnimatorBundles.Add(animatorTranslationY);
 
 			return this;
 		}
 
 		public virtual AnimatorBuilder ApplyFade(View viewToFade)
 		{
+			return ApplyFade(viewToFade, 1.0f, null);
+		}
+
+		public virtual AnimatorBuilder ApplyFade(View viewToFade, float fade)
+		{
+			return ApplyFade(viewToFade, fade, null);
+		}
+
+		public virtual AnimatorBuilder ApplyFade(View viewToFade, float fade, IInterpolator interpolator)
+		{
 			if (viewToFade == null)
 			{
 				throw new ArgumentNullException("viewToFade");
 			}
 
-			listAnimatorBundles.Add(AnimatorBundle.Create(AnimatorBundle.TypeAnimation.Fade, viewToFade, 1.0f));
+			float startAlpha = viewToFade.Alpha;
+
+			listAnimatorBundles.Add(AnimatorBundle.Create(AnimatorBundle.TypeAnimation.Fade, viewToFade, interpolator, startAlpha, fade));
 
 			return this;
 		}
@@ -114,88 +151,93 @@ namespace StickyHeader.Animator
 				throw new ArgumentNullException("viewToParallax");
 			}
 
-			listAnimatorBundles.Add(AnimatorBundle.Create(AnimatorBundle.TypeAnimation.Parallax, viewToParallax,
-				velocityParallax*-1));
+			listAnimatorBundles.Add(AnimatorBundle.Create(AnimatorBundle.TypeAnimation.Parallax, viewToParallax, null, 0f, -velocityParallax));
 
 			return this;
 		}
 
 		public virtual AnimatorBuilder ApplyVerticalParallax(View viewToParallax)
 		{
-			if (viewToParallax == null)
-			{
-				throw new ArgumentNullException("viewToParallax");
-			}
-
-			listAnimatorBundles.Add(AnimatorBundle.Create(AnimatorBundle.TypeAnimation.Parallax, viewToParallax,
-				DefaultVelocityAnimator*-1));
-
-			return this;
+			return ApplyVerticalParallax(viewToParallax, DefaultVelocityAnimator);
 		}
 
-		private void AdjustTranslation(AnimatorBundle newAnimator)
+		private void AdjustTranslation(View viewAnimated)
 		{
-			AnimatorBundle animatorScale = null, animatorTranslation = null;
+			AnimatorBundle animatorScaleX = null;
+			AnimatorBundle animatorScaleY = null;
+			AnimatorBundle animatorTranslationX = null;
+			AnimatorBundle animatorTranslationY = null;
 
 			foreach (AnimatorBundle animator in listAnimatorBundles)
 			{
-				if (newAnimator.mView == animator.mView)
+				if (viewAnimated == animator.mView)
 				{
-					if (newAnimator.mTypeAnimation == AnimatorBundle.TypeAnimation.Scale &&
-					    animator.mTypeAnimation == AnimatorBundle.TypeAnimation.Translation)
+					switch (animator.mTypeAnimation)
 					{
-						animatorScale = newAnimator;
-						animatorTranslation = animator;
-					}
-					else if (newAnimator.mTypeAnimation == AnimatorBundle.TypeAnimation.Translation &&
-					         animator.mTypeAnimation == AnimatorBundle.TypeAnimation.Scale)
-					{
-						animatorScale = animator;
-						animatorTranslation = newAnimator;
-					}
-
-					if (animatorScale != null)
-					{
-						float? translationX = (float?) animatorTranslation.mValues[0] -
-						                      (animatorTranslation.mView.Width*(float?) animatorScale.mValues[0]/2f);
-						float? translationY = (float?) animatorTranslation.mValues[1] -
-						                      (animatorTranslation.mView.Height*(float?) animatorScale.mValues[1]/2f);
-
-						animatorTranslation.mValues[0] = translationX;
-						animatorTranslation.mValues[1] = translationY;
-
-						break;
+						case AnimatorBundle.TypeAnimation.ScaleX:
+							animatorScaleX = animator;
+							break;
+						case AnimatorBundle.TypeAnimation.ScaleY:
+							animatorScaleY = animator;
+							break;
+						case AnimatorBundle.TypeAnimation.TranslationX:
+							animatorTranslationX = animator;
+							break;
+						case AnimatorBundle.TypeAnimation.TranslationY:
+							animatorTranslationY = animator;
+							break;
 					}
 				}
+			}
+
+			if (animatorTranslationX != null && animatorScaleX != null)
+			{
+				animatorTranslationX.mDelta += animatorTranslationX.mView.Width * (animatorScaleX.mDelta / 2f);
+			}
+
+			if (animatorTranslationY != null && animatorScaleY != null)
+			{
+				animatorTranslationY.mDelta += animatorTranslationY.mView.Height * (animatorScaleY.mDelta / 2f);
 			}
 		}
 
 		protected internal virtual void AnimateOnScroll(float boundedRatioTranslationY, float translationY)
 		{
+
+			if (mLastTranslationApplied == boundedRatioTranslationY)
+			{
+				return;
+			}
+
+			mLastTranslationApplied = boundedRatioTranslationY;
+
 			foreach (AnimatorBundle animatorBundle in listAnimatorBundles)
 			{
+				float interpolatedTranslation = animatorBundle.mInterpolator == null ? boundedRatioTranslationY : animatorBundle.mInterpolator.GetInterpolation(boundedRatioTranslationY);
+				float valueAnimation = animatorBundle.mFromValue + (animatorBundle.mDelta * interpolatedTranslation);
+
 				switch (animatorBundle.mTypeAnimation)
 				{
+
+					case AnimatorBundle.TypeAnimation.ScaleX:
+						animatorBundle.mView.ScaleX = valueAnimation;
+						break;
+					case AnimatorBundle.TypeAnimation.ScaleY:
+						animatorBundle.mView.ScaleY = valueAnimation;
+						break;
 					case AnimatorBundle.TypeAnimation.Fade:
-						animatorBundle.mView.Alpha = boundedRatioTranslationY;
+						animatorBundle.mView.Alpha = valueAnimation; //TODO performance issues?
 						break;
-
-					case AnimatorBundle.TypeAnimation.Translation:
-						animatorBundle.mView.TranslationX = (float) animatorBundle.mValues[0]*boundedRatioTranslationY;
-						animatorBundle.mView.TranslationY = ((float) animatorBundle.mValues[1]*boundedRatioTranslationY) - translationY;
+					case AnimatorBundle.TypeAnimation.TranslationX:
+						animatorBundle.mView.TranslationX = valueAnimation;
 						break;
-
-					case AnimatorBundle.TypeAnimation.Scale:
-						animatorBundle.mView.ScaleX = 1f - (float) animatorBundle.mValues[0]*boundedRatioTranslationY;
-						animatorBundle.mView.ScaleY = 1f - (float) animatorBundle.mValues[1]*boundedRatioTranslationY;
+					case AnimatorBundle.TypeAnimation.TranslationY:
+						animatorBundle.mView.TranslationY = valueAnimation - translationY;
 						break;
-
 					case AnimatorBundle.TypeAnimation.Parallax:
-						animatorBundle.mView.TranslationY = (float) animatorBundle.mValues[0]*translationY;
+						animatorBundle.mView.TranslationY = animatorBundle.mDelta * translationY;
 						break;
 
-					default:
-						break;
 				}
 			}
 		}
@@ -240,27 +282,33 @@ namespace StickyHeader.Animator
 		{
 			public enum TypeAnimation
 			{
-				Scale,
+				ScaleX,
+				ScaleY,
 				Fade,
-				Translation,
+				TranslationX,
+				TranslationY,
 				Parallax
 			}
 
 			internal readonly TypeAnimation mTypeAnimation;
-			internal object[] mValues;
+			internal float mFromValue;
+			internal float mDelta;
 			internal View mView;
+			internal IInterpolator mInterpolator;
 
 			internal AnimatorBundle(TypeAnimation typeAnimation)
 			{
 				mTypeAnimation = typeAnimation;
 			}
 
-			public static AnimatorBundle Create(TypeAnimation typeAnimation, View view, params object[] values)
+			public static AnimatorBundle Create(TypeAnimation typeAnimation, View view, IInterpolator interpolator, float from, float to)
 			{
 				var animatorBundle = new AnimatorBundle(typeAnimation);
 
 				animatorBundle.mView = view;
-				animatorBundle.mValues = values;
+				animatorBundle.mFromValue = from;
+				animatorBundle.mDelta = to - from;
+				animatorBundle.mInterpolator = interpolator;
 
 				return animatorBundle;
 			}

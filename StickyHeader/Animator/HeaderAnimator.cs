@@ -26,7 +26,7 @@ namespace StickyHeader.Animator
 			MaxTransaction = maxTransaction;
 
 			OnAnimatorAttached();
-			OnAnimatorReady();
+			header.ViewTreeObserver.AddOnGlobalLayoutSingleFire(() => OnAnimatorReady());
 		}
 
 		/// <summary>

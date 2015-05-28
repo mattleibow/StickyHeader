@@ -20,13 +20,7 @@ namespace StickyHeader.Animator
 		public override void OnScroll(int scrolledY)
 		{
 			Header.TranslationY = Math.Max(scrolledY, MaxTransaction);
-
-			TranslationRatio = CalculateTransactionRatio(scrolledY);
-		}
-
-		private float CalculateTransactionRatio(int scrolledY)
-		{
-			return scrolledY/(float) MaxTransaction;
+			TranslationRatio = (float)scrolledY / (float)MaxTransaction;
 		}
 	}
 }

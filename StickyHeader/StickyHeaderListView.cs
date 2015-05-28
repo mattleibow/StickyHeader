@@ -8,18 +8,15 @@ namespace StickyHeader
 {
 	public class StickyHeaderListView : StickyHeaderView
 	{
-		private readonly ListView listView;
+		protected readonly View fakeHeader;
 
 		public StickyHeaderListView(Context context, View header, int minHeightHeader, HeaderAnimator headerAnimator, ListView listView)
-			: base(context, header, minHeightHeader, headerAnimator)
+			: base(context, header, listView, minHeightHeader, headerAnimator)
 		{
-			this.listView = listView;
-
 			// fake header
-			var lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MatchParent, 0);
-			fakeHeader = new View(context)
+			var lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MatchParent, heightHeader);
+			fakeHeader = new Space(context)
 			{
-				Visibility = ViewStates.Invisible,
 				LayoutParameters = lp
 			};
 			this.listView.AddHeaderView(fakeHeader);
@@ -30,6 +27,21 @@ namespace StickyHeader
 				var scrolledY = -CalculateScrollYList();
 				headerAnimator.OnScroll(scrolledY);
 			};
+		}
+
+		private ListView listView
+		{
+			get { return (ListView)view; }
+		}
+
+		protected override void SetHeightHeader(int value)
+		{
+			base.SetHeightHeader(value);
+
+			if (fakeHeader != null)
+			{
+				fakeHeader.LayoutParameters.Height = heightHeader;
+			}
 		}
 
 		protected virtual int CalculateScrollYList()

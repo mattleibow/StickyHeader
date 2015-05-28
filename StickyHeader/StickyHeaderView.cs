@@ -9,17 +9,18 @@ namespace StickyHeader
 	{
 		protected readonly Context context;
 		protected readonly View header;
+		protected readonly View view;
 		protected readonly HeaderAnimator headerAnimator;
 		protected readonly int minHeightHeader;
 
-		protected View fakeHeader;
 		protected int heightHeader;
 		protected int maxHeaderTransaction;
 
-		protected StickyHeaderView(Context context, View header, int minHeightHeader, HeaderAnimator headerAnimator)
+		protected StickyHeaderView(Context context, View header, View view, int minHeightHeader, HeaderAnimator headerAnimator)
 		{
 			this.context = context;
 			this.header = header;
+			this.view = view;
 			this.minHeightHeader = minHeightHeader;
 			this.headerAnimator = headerAnimator;
 
@@ -31,14 +32,6 @@ namespace StickyHeader
 		protected virtual void SetHeightHeader(int value)
 		{
 			heightHeader = value;
-
-			// some implementations don't use a fake header
-			if (fakeHeader != null)
-			{
-				ViewGroup.LayoutParams lpFakeHeader = fakeHeader.LayoutParameters;
-				lpFakeHeader.Height = heightHeader;
-				fakeHeader.LayoutParameters = lpFakeHeader;
-			}
 
 			ViewGroup.LayoutParams lpHeader = header.LayoutParameters;
 			lpHeader.Height = heightHeader;
@@ -52,41 +45,23 @@ namespace StickyHeader
 
 		private void MeasureHeaderHeight()
 		{
-			int height = header.Height;
-			if (height == 0)
+			// try use the existing height
+			if (header.Height != 0)
 			{
-				// attach, wait for the height, detach
-
-				// support for newer android
-//				EventHandler handler = null;
-//				handler = (sender, e) =>
-//				{
-//					int h = header.Height;
-//					if (h > 0)
-//					{
-//						header.ViewTreeObserver.GlobalLayout -= handler;
-//						SetHeightHeader(h);
-//					}
-//				};
-//				header.ViewTreeObserver.GlobalLayout += handler;
-
-				// support for older Xamarin.Android that threw exceptions
-				bool fired = false;
-				header.ViewTreeObserver.GlobalLayout += (sender, e) =>
-				{
-					if (fired) return;
-
-					int h = header.Height;
-					if (h > 0)
-					{
-						fired = true;
-						SetHeightHeader(h);
-					}
-				};
+				SetHeightHeader(header.Height);
 			}
 			else
 			{
-				SetHeightHeader(height);
+				// try get the height from the layout
+				var lp = header.LayoutParameters;
+				if (lp != null && lp.Height > 0)
+				{
+					SetHeightHeader(lp.Height);
+				}
+				else
+				{
+					header.ViewTreeObserver.AddOnGlobalLayoutSingleFire(() => SetHeightHeader(header.Height));
+				}
 			}
 		}
 	}
