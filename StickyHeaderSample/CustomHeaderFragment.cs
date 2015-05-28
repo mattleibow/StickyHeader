@@ -1,10 +1,11 @@
 ﻿using Android.Animation;
-using Android.App;
 using Android.Content;
+using Android.App;
 using Android.OS;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Fragment = Android.Support.V4.App.Fragment;
 using StickyHeader;
 using StickyHeader.Animator;
 
@@ -37,18 +38,6 @@ namespace StickyHeaderSample
 				elements[i] = "row " + i;
 			}
 			listView.Adapter = new ArrayAdapter<string>(Activity, Android.Resource.Layout.SimpleListItem1, elements);
-		}
-
-		public override void OnStart()
-		{
-			base.OnStart();
-			Activity.ActionBar.Hide();
-		}
-
-		public override void OnStop()
-		{
-			base.OnStop();
-			Activity.ActionBar.Show();
 		}
 
 		private class CustomHeaderAnimator : HeaderStickyAnimator

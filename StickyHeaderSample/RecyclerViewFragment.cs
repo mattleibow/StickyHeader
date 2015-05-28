@@ -1,9 +1,11 @@
-﻿using Android.App;
+﻿using System.Collections.Generic;
+using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
+using Fragment = Android.Support.V4.App.Fragment;
 using StickyHeader;
 
 namespace StickyHeaderSample
@@ -22,6 +24,7 @@ namespace StickyHeaderSample
 			// header
 			var recyclerView = view.FindViewById<RecyclerView>(Resource.Id.recyclerview);
 			recyclerView.SetLayoutManager(new LinearLayoutManager(Activity, LinearLayoutManager.Vertical, false));
+			recyclerView.HasFixedSize = true;
 			StickyHeaderBuilder
 				.StickTo(recyclerView)
 				.SetHeader(Resource.Id.header, (ViewGroup) View)
@@ -29,32 +32,20 @@ namespace StickyHeaderSample
 				.Apply();
 
 			// items
-			var elements = new string[500];
-			for (int i = 0; i < elements.Length; i++)
+			var elements = new List<string>(500);
+			for (int i = 0; i < 500; i++)
 			{
-				elements[i] = "row " + i;
+				elements.Add("row " + i);
 			}
 			recyclerView.SetAdapter(new SimpleRecyclerAdapter(Activity, elements));
-		}
-
-		public override void OnStart()
-		{
-			base.OnStart();
-			Activity.ActionBar.Hide();
-		}
-
-		public override void OnStop()
-		{
-			base.OnStop();
-			Activity.ActionBar.Show();
 		}
 
 		private class SimpleRecyclerAdapter : RecyclerView.Adapter
 		{
 			private readonly Context context;
-			private readonly string[] elements;
+			private readonly List<string> elements;
 
-			public SimpleRecyclerAdapter(Context context, string[] elements)
+			public SimpleRecyclerAdapter(Context context, List<string> elements)
 			{
 				this.context = context;
 				this.elements = elements;
@@ -62,14 +53,14 @@ namespace StickyHeaderSample
 
 			public override int ItemCount
 			{
-				get { return elements.Length; }
+				get { return elements.Count; }
 			}
 
 			public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup viewGroup, int i)
 			{
 				LayoutInflater layoutInflater = LayoutInflater.From(context);
 				View view = layoutInflater.Inflate(Android.Resource.Layout.SimpleListItem1, viewGroup, false);
-				return new SimpleViewHolder(view);
+				return new SimpleViewHolder(this, elements, view);
 			}
 
 			public override void OnBindViewHolder(RecyclerView.ViewHolder viewHolder, int i)
@@ -82,10 +73,23 @@ namespace StickyHeaderSample
 			{
 				private readonly TextView textView;
 
-				public SimpleViewHolder(View itemView)
+				public SimpleViewHolder(SimpleRecyclerAdapter adapter, List<string> elements, View itemView)
 					: base(itemView)
 				{
 					textView = (TextView) itemView.FindViewById(Android.Resource.Id.Text1);
+
+					textView.Click += delegate
+					{
+						var pos = AdapterPosition;
+						elements.Insert(pos, "(+) row " + pos);
+						adapter.NotifyItemInserted(pos);
+					};
+					textView.LongClick += delegate
+					{
+						var pos = AdapterPosition;
+						elements.RemoveAt(pos);
+						adapter.NotifyItemRemoved(pos);
+					};
 				}
 
 				public void SetText(string text)
