@@ -40,7 +40,9 @@ namespace StickyHeader
 
 			if (fakeHeader != null)
 			{
-				fakeHeader.LayoutParameters.Height = heightHeader;
+				var layoutParam = fakeHeader.LayoutParameters;
+				layoutParam.Height = heightHeader;
+				fakeHeader.LayoutParameters = layoutParam;
 			}
 		}
 

@@ -15,6 +15,9 @@ namespace StickyHeader
 			// scroll events
 			scrollView.ViewTreeObserver.AddOnGlobalLayoutSingleFire(() => headerAnimator.OnScroll(-scrollView.ScrollY));
 			scrollView.ViewTreeObserver.ScrollChanged += (sender, e) => headerAnimator.OnScroll(-scrollView.ScrollY);
+
+			// some properties
+			scrollView.SetClipToPadding(false);
 		}
 
 		private ScrollView scrollView
@@ -33,7 +36,6 @@ namespace StickyHeader
 				scrollView.PaddingTop + heightHeader,
 				scrollView.PaddingRight,
 				scrollView.PaddingBottom);
-			scrollView.SetClipToPadding(false);
 		}
 	}
 }

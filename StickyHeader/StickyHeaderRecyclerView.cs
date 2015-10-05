@@ -14,7 +14,13 @@ namespace StickyHeader
 			SetupItemDecorator();
 
 			// scroll events
-			recyclerView.SetOnScrollListener(new RecyclerScrollListener(this));
+			recyclerView.AddOnScrollListener(new RecyclerScrollListener(this));
+		}
+
+		protected override void SetHeightHeader(int value)
+		{
+			base.SetHeightHeader(value);
+			recyclerView.InvalidateItemDecorations();
 		}
 
 		private RecyclerView recyclerView
@@ -25,7 +31,20 @@ namespace StickyHeader
 		private void SetupItemDecorator()
 		{
 			var layoutManager = recyclerView.GetLayoutManager();
-			if (layoutManager is GridLayoutManager)
+			if (layoutManager is StaggeredGridLayoutManager)
+			{
+				var manager = layoutManager as StaggeredGridLayoutManager;
+				switch (manager.Orientation)
+				{
+					case LinearLayoutManager.Vertical:
+						recyclerView.AddItemDecoration(new StaggeredGridItemDecoration(this));
+						break;
+					case LinearLayoutManager.Horizontal:
+						//TODO
+						break;
+				}
+			}
+			else if (layoutManager is GridLayoutManager)
 			{
 				var manager = layoutManager as GridLayoutManager;
 				switch (manager.Orientation)
@@ -49,6 +68,28 @@ namespace StickyHeader
 					case LinearLayoutManager.Horizontal:
 						//TODO
 						break;
+				}
+			}
+		}
+
+		private class StaggeredGridItemDecoration : RecyclerView.ItemDecoration
+		{
+			private readonly StickyHeaderRecyclerView headerView;
+
+			public StaggeredGridItemDecoration(StickyHeaderRecyclerView headerView)
+			{
+				this.headerView = headerView;
+			}
+
+			public override void GetItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state)
+			{
+				base.GetItemOffsets(outRect, view, parent, state);
+
+				var layoutManager = (StaggeredGridLayoutManager)parent.GetLayoutManager();
+				int position = parent.GetChildAdapterPosition(view);
+				if (position < layoutManager.SpanCount)
+				{
+					outRect.Top = headerView.heightHeader;
 				}
 			}
 		}

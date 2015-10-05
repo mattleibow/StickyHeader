@@ -60,7 +60,13 @@ namespace StickyHeader
 				}
 				else
 				{
-					header.ViewTreeObserver.AddOnGlobalLayoutSingleFire(() => SetHeightHeader(header.Height));
+					header.ViewTreeObserver.AddOnGlobalLayoutAction(() => 
+					{
+						if (heightHeader != header.Height)
+						{
+							SetHeightHeader(header.Height);
+						}
+					});
 				}
 			}
 		}
