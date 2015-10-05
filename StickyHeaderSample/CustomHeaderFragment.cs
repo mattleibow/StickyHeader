@@ -29,6 +29,7 @@ namespace StickyHeaderSample
 				.SetHeader(Resource.Id.header, (ViewGroup) View)
 				.SetMinHeightDimension(Resource.Dimension.min_height_header_materiallike)
 				.SetAnimator(new CustomHeaderAnimator(Activity))
+				.PreventTouchBehindHeader()
 				.Apply();
 			
 			// items

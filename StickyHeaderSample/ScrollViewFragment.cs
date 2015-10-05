@@ -24,6 +24,7 @@ namespace StickyHeaderSample
 				.StickTo(scrollView)
 				.SetHeader(Resource.Id.header, (FrameLayout) View)
 				.SetMinHeight(250)
+				.PreventTouchBehindHeader()
 				.Apply();
 		}
 	}

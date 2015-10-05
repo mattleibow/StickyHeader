@@ -25,6 +25,7 @@ namespace StickyHeaderSample
 				.StickTo(listView)
 				.SetHeader(Resource.Id.header, container)
 				.SetMinHeight(250)
+				.PreventTouchBehindHeader()
 				.Apply();
 
 			// items

@@ -8,8 +8,8 @@ namespace StickyHeader
 {
 	public class StickyHeaderScrollView : StickyHeaderView
 	{
-		public StickyHeaderScrollView(Context context, View header, int minHeightHeader, HeaderAnimator headerAnimator, ScrollView scrollView)
-			: base(context, header, scrollView, minHeightHeader, headerAnimator)
+		public StickyHeaderScrollView(Context context, View header, int minHeightHeader, HeaderAnimator headerAnimator, ScrollView scrollView, bool preventTouchBehindHeader)
+			: base(context, header, scrollView, minHeightHeader, headerAnimator, preventTouchBehindHeader)
 		{
 
 			// scroll events

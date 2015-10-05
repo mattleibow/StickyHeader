@@ -8,8 +8,8 @@ namespace StickyHeader
 {
 	public class StickyHeaderRecyclerView : StickyHeaderView
 	{
-		public StickyHeaderRecyclerView(Context context, View header, int minHeightHeader, HeaderAnimator headerAnimator, RecyclerView recyclerView)
-			: base(context, header, recyclerView, minHeightHeader, headerAnimator)
+		public StickyHeaderRecyclerView(Context context, View header, int minHeightHeader, HeaderAnimator headerAnimator, RecyclerView recyclerView, bool preventTouchBehindHeader)
+			: base(context, header, recyclerView, minHeightHeader, headerAnimator, preventTouchBehindHeader)
 		{
 			SetupItemDecorator();
 

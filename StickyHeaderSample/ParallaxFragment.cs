@@ -32,6 +32,7 @@ namespace StickyHeaderSample
 						.Create()
 						.ApplyVerticalParallax(image);
 				})
+				.PreventTouchBehindHeader()
 				.Apply();
 
 			// items

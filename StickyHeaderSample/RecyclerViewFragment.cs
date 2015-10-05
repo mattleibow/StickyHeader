@@ -29,6 +29,7 @@ namespace StickyHeaderSample
 				.StickTo(recyclerView)
 				.SetHeader(Resource.Id.header, (ViewGroup) View)
 				.SetMinHeightDimension(Resource.Dimension.min_height_header)
+				.PreventTouchBehindHeader()
 				.Apply();
 
 			// items

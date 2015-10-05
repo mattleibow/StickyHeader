@@ -14,6 +14,7 @@ namespace StickyHeader
 		private HeaderAnimator animator;
 		private View header;
 		private int minHeight;
+		private bool preventTouchBehindHeader;
 
 		private StickyHeaderBuilder(Context context)
 		{
@@ -48,6 +49,12 @@ namespace StickyHeader
 		public virtual StickyHeaderBuilder SetHeader(View headerView)
 		{
 			this.header = headerView;
+			return this;
+		}
+
+		public virtual StickyHeaderBuilder PreventTouchBehindHeader()
+		{
+			this.preventTouchBehindHeader = true;
 			return this;
 		}
 
@@ -95,7 +102,7 @@ namespace StickyHeader
 					animator = new HeaderStickyAnimator();
 				}
 
-				return new StickyHeaderListView(context, header, minHeight, animator, listView);
+				return new StickyHeaderListView(context, header, minHeight, animator, listView, preventTouchBehindHeader);
 			}
 		}
 
@@ -117,7 +124,7 @@ namespace StickyHeader
 					animator = new HeaderStickyAnimator();
 				}
 
-				return new StickyHeaderRecyclerView(context, header, minHeight, animator, recyclerView);
+				return new StickyHeaderRecyclerView(context, header, minHeight, animator, recyclerView, preventTouchBehindHeader);
 			}
 		}
 
@@ -139,7 +146,7 @@ namespace StickyHeader
 					animator = new HeaderStickyAnimator();
 				}
 
-				return new StickyHeaderScrollView(context, header, minHeight, animator, scrollView);
+				return new StickyHeaderScrollView(context, header, minHeight, animator, scrollView,preventTouchBehindHeader);
 			}
 		}
 	}

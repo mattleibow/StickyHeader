@@ -10,8 +10,8 @@ namespace StickyHeader
 	{
 		protected readonly View fakeHeader;
 
-		public StickyHeaderListView(Context context, View header, int minHeightHeader, HeaderAnimator headerAnimator, ListView listView)
-			: base(context, header, listView, minHeightHeader, headerAnimator)
+		public StickyHeaderListView(Context context, View header, int minHeightHeader, HeaderAnimator headerAnimator, ListView listView, bool preventTouchBehindHeader)
+			: base(context, header, listView, minHeightHeader, headerAnimator, preventTouchBehindHeader)
 		{
 			// fake header
 			var lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MatchParent, heightHeader);
