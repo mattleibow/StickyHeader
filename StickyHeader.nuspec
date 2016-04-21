@@ -21,6 +21,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="Bin\Release\StickyHeader.dll" target="lib\MonoAndroid10\StickyHeader.dll" /> 
+    <file src="Bin\Release\StickyHeader.dll" target="lib\MonoAndroid403\StickyHeader.dll" /> 
 </files>
 </package>
